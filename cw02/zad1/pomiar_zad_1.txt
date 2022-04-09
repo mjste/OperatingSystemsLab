@@ -1,0 +1,11 @@
+system function
+
+real	0m0,173s
+user	0m0,015s
+sys	0m0,036s
+
+library function
+
+real	0m0,005s
+user	0m0,000s
+sys	0m0,002s

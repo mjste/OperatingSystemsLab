@@ -1,0 +1,332 @@
+size=small_count=1
+counting:
+Total time: 0.010, user time: 0.000, system time 0.000
+loading:
+Total time: 0.000, user time: 0.000, system time 0.000
+removing_blocks
+Total time: 0.000, user time: 0.000, system time 0.000
+..........
+size=small_count=2
+counting:
+Total time: 0.000, user time: 0.000, system time 0.000
+loading:
+Total time: 0.000, user time: 0.000, system time 0.000
+removing_blocks
+Total time: 0.000, user time: 0.000, system time 0.000
+..........
+size=small_count=3
+counting:
+Total time: 0.000, user time: 0.000, system time 0.000
+loading:
+Total time: 0.000, user time: 0.000, system time 0.000
+removing_blocks
+Total time: 0.000, user time: 0.000, system time 0.000
+..........
+size=small_count=4
+counting:
+Total time: 0.010, user time: 0.000, system time 0.000
+loading:
+Total time: 0.000, user time: 0.000, system time 0.000
+removing_blocks
+Total time: 0.000, user time: 0.000, system time 0.000
+..........
+size=small_count=5
+counting:
+Total time: 0.000, user time: 0.000, system time 0.000
+loading:
+Total time: 0.000, user time: 0.000, system time 0.000
+removing_blocks
+Total time: 0.000, user time: 0.000, system time 0.000
+..........
+size=small_count=6
+counting:
+Total time: 0.000, user time: 0.000, system time 0.000
+loading:
+Total time: 0.000, user time: 0.000, system time 0.000
+removing_blocks
+Total time: 0.000, user time: 0.000, system time 0.000
+..........
+size=small_count=7
+counting:
+Total time: 0.010, user time: 0.010, system time 0.000
+loading:
+Total time: 0.000, user time: 0.000, system time 0.000
+removing_blocks
+Total time: 0.000, user time: 0.000, system time 0.000
+..........
+size=small_count=8
+counting:
+Total time: 0.000, user time: 0.000, system time 0.000
+loading:
+Total time: 0.000, user time: 0.000, system time 0.000
+removing_blocks
+Total time: 0.000, user time: 0.000, system time 0.000
+..........
+size=small_count=9
+counting:
+Total time: 0.000, user time: 0.000, system time 0.000
+loading:
+Total time: 0.000, user time: 0.000, system time 0.000
+removing_blocks
+Total time: 0.000, user time: 0.000, system time 0.000
+..........
+size=small_count=10
+counting:
+Total time: 0.010, user time: 0.000, system time 0.000
+loading:
+Total time: 0.000, user time: 0.000, system time 0.000
+removing_blocks
+Total time: 0.000, user time: 0.000, system time 0.000
+..........
+size=medium_count=1
+counting:
+Total time: 0.000, user time: 0.010, system time 0.000
+loading:
+Total time: 0.000, user time: 0.000, system time 0.000
+removing_blocks
+Total time: 0.000, user time: 0.000, system time 0.000
+..........
+size=medium_count=2
+counting:
+Total time: 0.010, user time: 0.010, system time 0.000
+loading:
+Total time: 0.000, user time: 0.000, system time 0.000
+removing_blocks
+Total time: 0.000, user time: 0.000, system time 0.000
+..........
+size=medium_count=3
+counting:
+Total time: 0.020, user time: 0.010, system time 0.000
+loading:
+Total time: 0.000, user time: 0.000, system time 0.000
+removing_blocks
+Total time: 0.000, user time: 0.000, system time 0.000
+..........
+size=medium_count=4
+counting:
+Total time: 0.010, user time: 0.020, system time 0.000
+loading:
+Total time: 0.000, user time: 0.000, system time 0.000
+removing_blocks
+Total time: 0.000, user time: 0.000, system time 0.000
+..........
+size=medium_count=5
+counting:
+Total time: 0.030, user time: 0.020, system time 0.000
+loading:
+Total time: 0.000, user time: 0.000, system time 0.000
+removing_blocks
+Total time: 0.000, user time: 0.000, system time 0.000
+..........
+size=medium_count=6
+counting:
+Total time: 0.030, user time: 0.020, system time 0.000
+loading:
+Total time: 0.000, user time: 0.000, system time 0.000
+removing_blocks
+Total time: 0.000, user time: 0.000, system time 0.000
+..........
+size=medium_count=7
+counting:
+Total time: 0.020, user time: 0.030, system time 0.000
+loading:
+Total time: 0.010, user time: 0.000, system time 0.000
+removing_blocks
+Total time: 0.000, user time: 0.000, system time 0.000
+..........
+size=medium_count=8
+counting:
+Total time: 0.030, user time: 0.030, system time 0.010
+loading:
+Total time: 0.000, user time: 0.000, system time 0.000
+removing_blocks
+Total time: 0.000, user time: 0.000, system time 0.000
+..........
+size=medium_count=9
+counting:
+Total time: 0.040, user time: 0.040, system time 0.000
+loading:
+Total time: 0.000, user time: 0.000, system time 0.000
+removing_blocks
+Total time: 0.000, user time: 0.000, system time 0.000
+..........
+size=medium_count=10
+counting:
+Total time: 0.040, user time: 0.040, system time 0.000
+loading:
+Total time: 0.000, user time: 0.000, system time 0.000
+removing_blocks
+Total time: 0.000, user time: 0.000, system time 0.000
+..........
+size=big_count=1
+counting:
+Total time: 0.100, user time: 0.090, system time 0.010
+loading:
+Total time: 0.000, user time: 0.000, system time 0.000
+removing_blocks
+Total time: 0.000, user time: 0.000, system time 0.000
+..........
+size=big_count=2
+counting:
+Total time: 0.160, user time: 0.150, system time 0.000
+loading:
+Total time: 0.000, user time: 0.000, system time 0.000
+removing_blocks
+Total time: 0.000, user time: 0.000, system time 0.000
+..........
+size=big_count=3
+counting:
+Total time: 0.250, user time: 0.240, system time 0.010
+loading:
+Total time: 0.000, user time: 0.000, system time 0.000
+removing_blocks
+Total time: 0.000, user time: 0.000, system time 0.000
+..........
+size=big_count=4
+counting:
+Total time: 0.330, user time: 0.320, system time 0.010
+loading:
+Total time: 0.000, user time: 0.000, system time 0.000
+removing_blocks
+Total time: 0.000, user time: 0.000, system time 0.000
+..........
+size=big_count=5
+counting:
+Total time: 0.400, user time: 0.400, system time 0.000
+loading:
+Total time: 0.000, user time: 0.000, system time 0.000
+removing_blocks
+Total time: 0.000, user time: 0.000, system time 0.000
+..........
+size=big_count=6
+counting:
+Total time: 0.500, user time: 0.480, system time 0.020
+loading:
+Total time: 0.000, user time: 0.000, system time 0.000
+removing_blocks
+Total time: 0.000, user time: 0.000, system time 0.000
+..........
+size=big_count=7
+counting:
+Total time: 0.560, user time: 0.550, system time 0.010
+loading:
+Total time: 0.000, user time: 0.000, system time 0.000
+removing_blocks
+Total time: 0.000, user time: 0.000, system time 0.000
+..........
+size=big_count=8
+counting:
+Total time: 0.660, user time: 0.640, system time 0.010
+loading:
+Total time: 0.000, user time: 0.000, system time 0.000
+removing_blocks
+Total time: 0.000, user time: 0.000, system time 0.000
+..........
+size=big_count=9
+counting:
+Total time: 0.730, user time: 0.710, system time 0.020
+loading:
+Total time: 0.000, user time: 0.000, system time 0.000
+removing_blocks
+Total time: 0.000, user time: 0.000, system time 0.000
+..........
+size=big_count=10
+counting:
+Total time: 0.810, user time: 0.780, system time 0.040
+loading:
+Total time: 0.000, user time: 0.000, system time 0.000
+removing_blocks
+Total time: 0.000, user time: 0.000, system time 0.000
+..........
+Done
+size=small_count=1
+Total time: 0.000, user time: 0.000, system time 0.000
+..........
+size=small_count=2
+Total time: 0.000, user time: 0.000, system time 0.000
+..........
+size=small_count=3
+Total time: 0.000, user time: 0.000, system time 0.000
+..........
+size=small_count=4
+Total time: 0.000, user time: 0.000, system time 0.000
+..........
+size=small_count=5
+Total time: 0.000, user time: 0.000, system time 0.000
+..........
+size=small_count=6
+Total time: 0.000, user time: 0.000, system time 0.000
+..........
+size=small_count=7
+Total time: 0.000, user time: 0.000, system time 0.000
+..........
+size=small_count=8
+Total time: 0.000, user time: 0.000, system time 0.000
+..........
+size=small_count=9
+Total time: 0.000, user time: 0.000, system time 0.000
+..........
+size=small_count=10
+Total time: 0.000, user time: 0.000, system time 0.000
+..........
+size=medium_count=1
+Total time: 0.000, user time: 0.000, system time 0.000
+..........
+size=medium_count=2
+Total time: 0.000, user time: 0.000, system time 0.000
+..........
+size=medium_count=3
+Total time: 0.000, user time: 0.000, system time 0.000
+..........
+size=medium_count=4
+Total time: 0.000, user time: 0.000, system time 0.000
+..........
+size=medium_count=5
+Total time: 0.000, user time: 0.000, system time 0.000
+..........
+size=medium_count=6
+Total time: 0.000, user time: 0.000, system time 0.000
+..........
+size=medium_count=7
+Total time: 0.000, user time: 0.000, system time 0.000
+..........
+size=medium_count=8
+Total time: 0.000, user time: 0.000, system time 0.000
+..........
+size=medium_count=9
+Total time: 0.000, user time: 0.000, system time 0.000
+..........
+size=medium_count=10
+Total time: 0.000, user time: 0.000, system time 0.000
+..........
+size=big_count=1
+Total time: 0.000, user time: 0.000, system time 0.000
+..........
+size=big_count=2
+Total time: 0.000, user time: 0.000, system time 0.000
+..........
+size=big_count=3
+Total time: 0.000, user time: 0.000, system time 0.000
+..........
+size=big_count=4
+Total time: 0.000, user time: 0.000, system time 0.000
+..........
+size=big_count=5
+Total time: 0.000, user time: 0.000, system time 0.000
+..........
+size=big_count=6
+Total time: 0.000, user time: 0.000, system time 0.000
+..........
+size=big_count=7
+Total time: 0.000, user time: 0.000, system time 0.000
+..........
+size=big_count=8
+Total time: 0.000, user time: 0.000, system time 0.000
+..........
+size=big_count=9
+Total time: 0.000, user time: 0.000, system time 0.000
+..........
+size=big_count=10
+Total time: 0.000, user time: 0.000, system time 0.000
+..........
+Done

@@ -1,0 +1,12 @@
+FORK. Dziedziczone:
++ ignore
++ handle
++ mask
+- pending
+
+FORK+EXEC. Dziedziczone:
++ ignore
++ handle
++ mask
+- pending
+

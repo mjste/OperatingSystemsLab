@@ -1,0 +1,1 @@
+Otrzymane wyniki nie różnią się zbytnio. Dla największych plików w największej liczbie nie zauważono istotnej różnicy w czasie dla obliczeń. Te czasy to 0.8s, 0.82s, 0.83s.

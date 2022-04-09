@@ -1,0 +1,16 @@
+raport 3b
+static O0: 
+static O1: 
+static O2: 
+static O3: 
+static Os: 
+shared O0: 
+shared O1: 
+shared O2: 
+shared O3: 
+shared Os: 
+dynamic O0: 
+dynamic O1: 
+dynamic O2: 
+dynamic O3: 
+dynamic Os: 
