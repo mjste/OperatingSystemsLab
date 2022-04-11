@@ -78,10 +78,11 @@ int main(int argc, char **argv)
             function(i, components, commands);
             exit(0);
         }
+        wait(NULL);
     }
 
-    for (int i = 0; i < commlen; i++)
-        wait(NULL);
+    // for (int i = 0; i < commlen; i++)
+    //     wait(NULL);
 
     return 0;
 }
@@ -141,7 +142,7 @@ void function(int index, char components[MAX_VARIABLE_COUNT][BUFFER_SIZE], char 
     {
         printf("%s\tlen: %ld\n", subcommands[i], strlen(subcommands[i]));
     }
-    printf("\n\n");
+    printf("\n");
 
     // create pipes
     int *pipes = calloc((subcmdn - 1) * 2, sizeof(int));
@@ -150,34 +151,60 @@ void function(int index, char components[MAX_VARIABLE_COUNT][BUFFER_SIZE], char 
         pipe(pipes + 2 * i);
     }
 
+    // create process for each subcommand
     for (int i = 0; i < subcmdn; i++)
     {
         if (fork() == 0)
         {
-            if (i == 0)
+            printf("index: %d, i: %d\n", index, i);
+            // if (i == 0)
+            // {
+            //     dup2(pipes[1], STDOUT_FILENO);
+            // }
+            // else if (i == subcmdn - 1)
+            // {
+            //     dup2(pipes[2 * subcmdn - 4], STDIN_FILENO);
+            // }
+            // else
+            // {
+            //     dup2(pipes[2 * (i - 1)], STDIN_FILENO);
+            //     dup2(pipes[2 * i + 1], STDOUT_FILENO);
+            // }
+
+            // char args[MAX_VARIABLE_COUNT][BUFFER_SIZE];
+            char **args = calloc(MAX_VARIABLE_COUNT, sizeof(char *));
+            // for (int j = 0; j < MAX_VARIABLE_COUNT; j++) {
+            //     args[j] = calloc(BUFFER_SIZE, sizeof(char));
+            // }
+
+            char *ptr = subcommands[i];
+            char *initp = ptr;
+            int ind = 0;
+            while ((ptr = strtok(initp, " ")))
             {
-                dup2(STDOUT_FILENO, pipes[1]);
+                initp = NULL;
+                args[ind] = calloc(BUFFER_SIZE, sizeof(char));
+                strcpy(args[ind++], ptr);
+                // printf("thissssssss %s\tlen: %ld\n", ptr, strlen(ptr));
             }
-            else if (i == subcmdn - 1)
-            {
-                dup2(2 * subcmdn - 4, STDIN_FILENO);
-            }
-            else
-            {
-                dup2(pipes[2 * (i - 1)], STDIN_FILENO);
-                dup2(STDOUT_FILENO, pipes[2 * i + 1]);
-            }
+            args[ind] = NULL;
+
+            execvp(args[0], args);
+            printf("after exec\n\n");
+            // printf("index: %d, i: %d\n", index, i);
 
             exit(0);
         }
-    }
-    for (int i = 0; i < 2 * (subcmdn - 1); i++)
-    {
-        close(pipes[i]);
+        wait(NULL);
     }
 
-    for (int i = 0; i < subcmdn; i++)
-        wait(NULL);
+    printf("\n\n");
+
+    // for (int i = 0; i < subcmdn; i++)
+    //     wait(NULL);
+
+    for (int i = 0; i < 2 * (subcmdn - 1); i++)
+        close(pipes[i]);
 
     free(pipes);
 }
