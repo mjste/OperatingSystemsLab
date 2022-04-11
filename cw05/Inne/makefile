@@ -5,3 +5,6 @@ all:
 	gcc -Wall main4.c -o main4
 	gcc -Wall main5.c -o main5
 	gcc -Wall main6.c -o main6
+
+clean:
+	rm main main2 main3 main4 main5 main6 || true

@@ -78,11 +78,11 @@ int main(int argc, char **argv)
             function(i, components, commands);
             exit(0);
         }
-        wait(NULL);
+        // wait(NULL);
     }
 
-    // for (int i = 0; i < commlen; i++)
-    //     wait(NULL);
+    for (int i = 0; i < commlen; i++)
+        wait(NULL);
 
     return 0;
 }
@@ -121,8 +121,6 @@ void function(int index, char components[MAX_VARIABLE_COUNT][BUFFER_SIZE], char 
     }
     // null last space
     cmd[strlen(cmd) - 1] = 0;
-    // printf("One command: %s\n", cmd);
-    printf("%s\n", cmd);
 
     // put command into subcommands
     char subcommands[MAX_VARIABLE_COUNT][BUFFER_SIZE];
@@ -135,15 +133,7 @@ void function(int index, char components[MAX_VARIABLE_COUNT][BUFFER_SIZE], char 
         if (arg[0] == ' ')
             arg++;
         strcpy(subcommands[subcmdn++], arg);
-        // printf("%s\n", arg);
     }
-
-    // printf("subcommands:\n");
-    // for (int i = 0; i < subcmdn; i++)
-    // {
-    //     printf("%s\tlen: %ld\n", subcommands[i], strlen(subcommands[i]));
-    // }
-    // printf("\n");
 
     // create pipes
     int *pipes = calloc((subcmdn - 1) * 2, sizeof(int));
@@ -157,7 +147,6 @@ void function(int index, char components[MAX_VARIABLE_COUNT][BUFFER_SIZE], char 
     {
         if (fork() == 0)
         {
-            // printf("index: %d, i: %d\n", index, i);
             if (i == 0)
             {
                 dup2(pipes[2 * i + 1], STDOUT_FILENO);
@@ -191,7 +180,6 @@ void function(int index, char components[MAX_VARIABLE_COUNT][BUFFER_SIZE], char 
                 initp = NULL;
                 args[ind] = calloc(BUFFER_SIZE, sizeof(char));
                 strcpy(args[ind++], ptr);
-                // printf("thissssssss %s\tlen: %ld\n", ptr, strlen(ptr));
             }
             args[ind] = NULL;
 
@@ -202,21 +190,15 @@ void function(int index, char components[MAX_VARIABLE_COUNT][BUFFER_SIZE], char 
                 {
                     strcpy(args[j], &args[j][1]);
                     args[j][strlen(args[j]) - 1] = 0;
-                    // printf("%s\n", args[j]);
                 }
             }
 
             execvp(args[0], args);
-            // printf("after exec\n\n");
-            // printf("index: %d, i: %d\n", index, i);
-
-            exit(0);
         }
-        // wait(NULL);
     }
 
-    // printf("\n\n");
-
+    // close all pipes
+    // necessary for processes to run -> closes stdin for subprocesses
     for (int i = 0; i < 2 * (subcmdn - 1); i++)
         close(pipes[i]);
 
