@@ -160,12 +160,10 @@ void function(int index, char components[MAX_VARIABLE_COUNT][BUFFER_SIZE], char 
             // printf("index: %d, i: %d\n", index, i);
             if (i == 0)
             {
-                // dup2(pipes[1], STDOUT_FILENO);
                 dup2(pipes[2 * i + 1], STDOUT_FILENO);
             }
             else if (i == subcmdn - 1)
             {
-                // dup2(pipes[2 * subcmdn - 4], STDIN_FILENO);
                 dup2(pipes[2 * (i - 1)], STDIN_FILENO);
             }
             else
@@ -182,22 +180,8 @@ void function(int index, char components[MAX_VARIABLE_COUNT][BUFFER_SIZE], char 
                 }
             }
 
-            /*
-
-
-            TODO:
-
-            * closing pipes -> stdin must be closed
-            * parsing arguments
-
-
-            */
-
-            // char args[MAX_VARIABLE_COUNT][BUFFER_SIZE];
+            // create args for exec
             char **args = calloc(MAX_VARIABLE_COUNT, sizeof(char *));
-            // for (int j = 0; j < MAX_VARIABLE_COUNT; j++) {
-            //     args[j] = calloc(BUFFER_SIZE, sizeof(char));
-            // }
 
             char *ptr = subcommands[i];
             char *initp = ptr;
@@ -210,6 +194,17 @@ void function(int index, char components[MAX_VARIABLE_COUNT][BUFFER_SIZE], char 
                 // printf("thissssssss %s\tlen: %ld\n", ptr, strlen(ptr));
             }
             args[ind] = NULL;
+
+            // check args if they are containing ' or ", and remove it
+            for (int j = 0; j < ind; j++)
+            {
+                if (args[j][0] == '\'')
+                {
+                    strcpy(args[j], &args[j][1]);
+                    args[j][strlen(args[j]) - 1] = 0;
+                    // printf("%s\n", args[j]);
+                }
+            }
 
             execvp(args[0], args);
             // printf("after exec\n\n");
