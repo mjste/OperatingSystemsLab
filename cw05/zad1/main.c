@@ -171,6 +171,9 @@ void function(int index, char components[MAX_VARIABLE_COUNT][BUFFER_SIZE], char 
 
             // create args for exec
             char **args = calloc(MAX_VARIABLE_COUNT, sizeof(char *));
+            // tutaj błąd - powinno być statycznie
+            // nie każdy system sprząta alokowaną pamięć
+            // mogłoby dojść do wycieku pamięci
 
             char *ptr = subcommands[i];
             char *initp = ptr;

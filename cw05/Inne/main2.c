@@ -20,8 +20,8 @@ int main()
         close(fd[0]);
         char text[] = "0 foo bar\n1 Ala ma kota\n2 fagag";
         write(fd[1], text, strlen(text));
-        }
-    close(fd[1]);
+        close(fd[1]);
+    }
 
     //     FILE* grep_input = popen("grep Ala", "w");
     // // fputs(..., grep_input) - przesłanie danych do grep-a
