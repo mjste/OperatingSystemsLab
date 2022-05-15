@@ -9,14 +9,19 @@ enum requests
     CS_TO_ONE,
     CS_STOP,
     CS_INIT,
+    SC_LIST,
     SC_SEND,
-    SC_STOP
+    SC_STOP,
+    SC_INIT,
+    C_READ,
+    UNKNOWN_REQUEST
 };
 
 struct packet_message
 {
     unsigned char sender_id;
     unsigned char receiver_id;
+    int queue_id;
     char message[MESSAGE_SIZE];
 };
 

@@ -67,11 +67,16 @@ int main()
 
 void exit0()
 {
-    if (msgctl(msgq_id, IPC_RMID, NULL) == -1)
+    // remove message queue
+    int result = msgctl(msgq_id, IPC_RMID, NULL);
+    if (result == -1)
     {
-        perror(strerror(errno));
+        perror("exit0");
         exit(errno);
     }
+    puts("Queue removed successfully");
+
+    fclose(fp);
 }
 
 void init_receive_queue()
@@ -106,7 +111,6 @@ void set_sigaction()
 
 void sigint_handler(int signum)
 {
-    exit0();
     exit(0);
 }
 
@@ -114,13 +118,13 @@ void handle_packet()
 {
     save_log();
     int sender_id = received_packet.packet_message.sender_id;
+    struct packet new_packet;
 
     switch (received_packet.type)
     {
     case CS_LIST:
     {
-        struct packet new_packet;
-        new_packet.type = SC_SEND;
+        new_packet.type = SC_LIST;
         new_packet.packet_message.sender_id = 0;
         new_packet.packet_message.receiver_id = sender_id;
         char *message = new_packet.packet_message.message;
@@ -134,19 +138,62 @@ void handle_packet()
                 strcat(message, buffer);
             }
         }
-
-        msgsnd(sender_id, &new_packet, sizeof(struct packet_message), 0);
-
+        msgsnd(clients[sender_id], &new_packet, sizeof(struct packet_message), 0);
         break;
     }
     case CS_STOP:
+    {
+        msgctl(clients[sender_id], IPC_RMID, NULL);
+        clients[sender_id] = 0;
         break;
+    }
     case CS_TO_ALL:
+    {
+        char *message = received_packet.packet_message.message;
+        new_packet.type = SC_SEND;
+        strcpy(new_packet.packet_message.message, message);
+        new_packet.packet_message.sender_id = sender_id;
+        for (int i = 0; i < CLIENTS_NUMBER; i++)
+        {
+            if (clients[i] != 0)
+            {
+                new_packet.packet_message.receiver_id = i;
+                msgsnd(clients[i], &new_packet, sizeof(struct packet_message), 0);
+            }
+        }
         break;
+    }
+
     case CS_TO_ONE:
+    {
+        received_packet.type = SC_SEND;
+        int receiver = received_packet.packet_message.receiver_id;
+        msgsnd(clients[receiver], &received_packet, sizeof(struct packet_message), 0);
         break;
+    }
     case CS_INIT:
-        break;
+        // find first empty space in clients
+        {
+            int i;
+            for (i = 1; i < CLIENTS_NUMBER; i++)
+            {
+                if (clients[i] == 0)
+                {
+                    break;
+                }
+            }
+            if (i < CLIENTS_NUMBER)
+            {
+                clients[i] = received_packet.packet_message.queue_id;
+
+                new_packet.type = SC_INIT;
+                new_packet.packet_message.sender_id = 0;
+                new_packet.packet_message.receiver_id = i;
+                msgsnd(clients[i], &new_packet, sizeof(struct packet_message), 0);
+            }
+
+            break;
+        }
     }
 }
 
@@ -171,6 +218,11 @@ void close_log_file()
 void save_log()
 {
     char s[64];
+    memset(s, 0, sizeof(s));
+    time_t t = time(NULL);
+    struct tm *tmp = localtime(&t);
+    strftime(s, sizeof(s), "%c", tmp);
+
     fprintf(fp, "%s %ld %d %s\n", s, received_packet.type, received_packet.packet_message.sender_id, received_packet.packet_message.message);
     fprintf(stdout, "%s %ld %d %s\n", s, received_packet.type, received_packet.packet_message.sender_id, received_packet.packet_message.message);
 }
