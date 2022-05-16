@@ -2,25 +2,28 @@
 #include <stdio.h>
 #include <signal.h>
 #include <sys/types.h>
-#include <sys/msg.h>
-#include <sys/ipc.h>
 #include <stdlib.h>
 #include <errno.h>
 #include <unistd.h>
 #include <string.h>
+
+#include <fcntl.h>
+#include <sys/stat.h>
+#include <mqueue.h>
 
 void set_sigaction();
 void sigint_handler(int);
 void init_queue();
 void remove_queue();
 void connect_to_server();
-void disconnect_from_server();
+void disconnect_with_server();
 int string_option(char *command);
 
-int msgq_id;
-int server_msgq_id;
+mqd_t queue;
+mqd_t server_queue;
+
 int client_id;
-key_t key;
+char queue_name[30];
 
 int main()
 {
@@ -28,14 +31,15 @@ int main()
     atexit(remove_queue);
     set_sigaction();
     connect_to_server();
-    atexit(disconnect_from_server);
+    atexit(disconnect_with_server);
 
     char buffer[MESSAGE_SIZE];
     char buffer1[MESSAGE_SIZE];
     char buffer2[MESSAGE_SIZE];
     char buffer3[MESSAGE_SIZE];
     char buffer4[MESSAGE_SIZE];
-    struct packet r_packet;
+
+    char message_buffer[PACKET_SIZE];
 
     while (1)
     {
@@ -52,32 +56,38 @@ int main()
         {
         case CS_LIST:
         {
-            puts("Reply: ");
-            r_packet.type = CS_LIST;
-            r_packet.packet_message.sender_id = client_id;
-            memset(r_packet.packet_message.message, 0, MESSAGE_SIZE);
-            msgsnd(server_msgq_id, &r_packet, sizeof(struct packet_message), 0);
-            msgrcv(msgq_id, &r_packet, sizeof(struct packet_message), SC_LIST, 0);
-            puts(r_packet.packet_message.message);
+            printf("Reply: ");
+            message_buffer[MF_TYPE] = CS_LIST;
+            message_buffer[MF_FROM] = (char)client_id;
+            memset(message_buffer + MF_MESSAGE, 0, MESSAGE_SIZE);
+            mq_send(server_queue, message_buffer, PACKET_SIZE, 0);
+            sleep(1);
+            mq_receive(queue, message_buffer, PACKET_SIZE, 0);
+            puts(message_buffer + MF_MESSAGE);
             break;
         }
         case CS_TO_ONE:
         {
-            r_packet.type = CS_TO_ONE;
-            r_packet.packet_message.receiver_id = atoi(buffer2);
-            r_packet.packet_message.sender_id = client_id;
-            strcpy(r_packet.packet_message.message, buffer3);
-            msgsnd(server_msgq_id, &r_packet, sizeof(struct packet_message), 0);
-            puts("Message sent");
+            message_buffer[MF_TYPE] = CS_TO_ONE;
+            message_buffer[MF_FROM] = (char)client_id;
+            message_buffer[MF_TO] = (char)atoi(buffer2);
+            strcpy(message_buffer + MF_MESSAGE, buffer3);
+            if (mq_send(server_queue, message_buffer, PACKET_SIZE, 0) != -1)
+                puts("Message sent successfully");
+            else
+                puts("Message couldn't be send");
+
             break;
         }
         case CS_TO_ALL:
         {
-            r_packet.type = CS_TO_ALL;
-            r_packet.packet_message.sender_id = client_id;
-            strcpy(r_packet.packet_message.message, buffer4);
-            msgsnd(server_msgq_id, &r_packet, sizeof(struct packet_message), 0);
-            puts("Message sent");
+            message_buffer[MF_TYPE] = CS_TO_ALL;
+            message_buffer[MF_FROM] = (char)client_id;
+            strcpy(message_buffer + MF_MESSAGE, buffer4);
+            if (mq_send(server_queue, message_buffer, PACKET_SIZE, 0) == -1)
+                puts("Sending error");
+            else
+                puts("Message sent successfully");
             break;
         }
         case CS_STOP:
@@ -87,17 +97,21 @@ int main()
         }
         case C_READ:
         {
-            while (msgrcv(msgq_id, &r_packet, sizeof(struct packet_message), SC_SEND, IPC_NOWAIT) > 0)
+            while (mq_receive(queue, message_buffer, PACKET_SIZE, 0) > 0)
             {
-                printf("from: %d\n", r_packet.packet_message.sender_id);
-                printf("message: %s\n", r_packet.packet_message.message);
+                int type = message_buffer[MF_TYPE];
+                if (type == SC_SEND || type == SC_LIST)
+                {
+                    printf("from: %d\n", (int)message_buffer[MF_FROM]);
+                    printf("message: %s\n", message_buffer + MF_MESSAGE);
+                }
+                else
+                {
+                    puts("Server was shut down");
+                    fflush(stdout);
+                    exit(0);
+                }
             }
-            if (msgrcv(msgq_id, &r_packet, sizeof(struct packet_message), SC_STOP, IPC_NOWAIT) > 0)
-            {
-                puts("Server was shut down. Shutting down");
-                exit(0);
-            }
-
             break;
         }
         case UNKNOWN_REQUEST:
@@ -127,7 +141,12 @@ void sigint_handler(int signum)
 
 void init_queue()
 {
-    char i = '2';
+    unsigned char i = 1;
+    struct mq_attr mqattr;
+    mqattr.mq_flags = 0;
+    mqattr.mq_msgsize = PACKET_SIZE;
+    mqattr.mq_curmsgs = 0;
+    mqattr.mq_maxmsg = 10;
     while (1)
     {
         if (i == 255)
@@ -135,21 +154,27 @@ void init_queue()
             puts("Sender limit achieved");
             exit(1);
         }
-        key = ftok(getenv("HOME"), i);
-        msgq_id = msgget(key, IPC_CREAT | IPC_EXCL | 0600);
-        if (msgq_id != -1)
+        queue_name[0] = '/';
+        sprintf(queue_name + 1, "%d", i);
+        if ((queue = mq_open(queue_name, O_RDONLY | O_CREAT | O_EXCL | O_NONBLOCK, 0600, &mqattr)) != -1)
         {
             break;
         }
         i++;
     }
+    puts(queue_name);
 }
 
 void remove_queue()
 {
-    if (msgctl(msgq_id, IPC_RMID, NULL) == -1)
+    if (mq_close(queue) == -1)
     {
-        perror("remove_queue");
+        perror("close queue");
+        exit(errno);
+    }
+    if (mq_unlink(queue_name) == -1)
+    {
+        perror("remove queue");
         exit(errno);
     }
     puts("Queue removed successfully");
@@ -157,37 +182,34 @@ void remove_queue()
 
 void connect_to_server()
 {
-    key_t server_key = ftok(getenv("HOME"), SERVER_KEY_NUMBER);
-    if (server_key == -1)
+    if ((server_queue = mq_open("/0", O_WRONLY)) == -1)
     {
-        perror("connect_to_server");
+        perror("connection to server");
         exit(errno);
     }
-    server_msgq_id = msgget(server_key, 0);
-    if (server_msgq_id == -1)
-    {
-        perror("connect_to_server");
-        exit(errno);
-    }
-    struct packet new_packet;
-    new_packet.type = CS_INIT;
-    new_packet.packet_message.sender_id = 0;
-    new_packet.packet_message.queue_key = key;
-    memset(new_packet.packet_message.message, 0, MESSAGE_SIZE);
-    msgsnd(server_msgq_id, &new_packet, sizeof(struct packet_message), 0);
-    msgrcv(msgq_id, &new_packet, sizeof(struct packet_message), 0, 0);
-    client_id = new_packet.packet_message.receiver_id;
+    char message_buffer[PACKET_SIZE];
+    message_buffer[MF_TYPE] = CS_INIT;
+    message_buffer[MF_FROM] = 0;
+    message_buffer[MF_TO] = 0;
+    strcpy(message_buffer + MF_MESSAGE, queue_name);
+    mq_send(server_queue, message_buffer, PACKET_SIZE, 0);
+    sleep(1);
+    mq_receive(queue, message_buffer, PACKET_SIZE, 0);
+    client_id = (int)message_buffer[MF_TO];
     printf("client_id: %d\n", client_id);
 }
 
-void disconnect_from_server()
+void disconnect_with_server()
 {
-    struct packet new_packet;
-    new_packet.type = CS_STOP;
-    new_packet.packet_message.sender_id = client_id;
-    new_packet.packet_message.receiver_id = 0;
-    memset(new_packet.packet_message.message, 0, MESSAGE_SIZE);
-    msgsnd(server_msgq_id, &new_packet, sizeof(struct packet_message), 0);
+    char message_buffer[PACKET_SIZE];
+    message_buffer[MF_TYPE] = CS_STOP;
+    message_buffer[MF_FROM] = (char)client_id;
+    message_buffer[MF_TO] = 0;
+    memset(message_buffer + MF_MESSAGE, 0, MESSAGE_SIZE);
+    if (mq_send(server_queue, message_buffer, PACKET_SIZE, 0) != -1)
+    {
+        puts("Disconnected succesfully");
+    }
 }
 
 int string_option(char *command)

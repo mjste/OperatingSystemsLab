@@ -14,7 +14,7 @@ void sigint_handler(int);
 void init_queue();
 void remove_queue();
 void connect_to_server();
-void disconnect_from_server();
+void disconnect_with_server();
 int string_option(char *command);
 
 int msgq_id;
@@ -28,7 +28,7 @@ int main()
     atexit(remove_queue);
     set_sigaction();
     connect_to_server();
-    atexit(disconnect_from_server);
+    atexit(disconnect_with_server);
 
     char buffer[MESSAGE_SIZE];
     char buffer1[MESSAGE_SIZE];
@@ -180,7 +180,7 @@ void connect_to_server()
     printf("client_id: %d\n", client_id);
 }
 
-void disconnect_from_server()
+void disconnect_with_server()
 {
     struct packet new_packet;
     new_packet.type = CS_STOP;
