@@ -1,7 +1,8 @@
 all:
+	gcc -c common.c
 	gcc -Wall baker.c -o baker
-	gcc -Wall deliverer.c -o deliverer
-	gcc -Wall pizzeria.c -o pizzeria
+	gcc -Wall -o deliverer deliverer.c common.o
+	gcc -Wall -o pizzeria pizzeria.c common.o
 
 clean:
 	rm baker deliverer pizzeria || true

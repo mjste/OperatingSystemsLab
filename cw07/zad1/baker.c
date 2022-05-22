@@ -8,11 +8,11 @@ void wait_for_sem(int sem_set_id, int sem_no);
 void free_sem(int sem_set_id, int sem_no);
 
 int running = 1;
-time_t start_time;
+struct timeval start_time;
 
 int main()
 {
-    start_time = times(NULL);
+    gettimeofday(&start_time, NULL);
     srand(time(NULL));
     set_interrupt();
     // generate keys
@@ -63,7 +63,7 @@ int main()
         exit(-1);
     }
     struct container *shm_table_address = (struct container *)shmat(shm_table_id, NULL, 0);
-    if (shm_table_address == (struct containter *)(-1))
+    if (shm_table_address == (struct container *)(-1))
     {
         perror("shm_table_at");
         exit(-1);
@@ -72,17 +72,18 @@ int main()
     int pizza_number;
     int pizza_was_put_in_oven = 0;
     int pizza_was_put_on_table = 0;
+    int pizzas_in_oven;
     int oven_index;
 
     while (running)
     {
         // picking pizza number
         pizza_number = rand() % 10;
-        pizza_was_put_in_oven = 0;
         printf("%d %.3f Przygotowuję pizze: %d\n", (int)getpid(), get_timestamp(), pizza_number);
         sleep(1);
 
         // put pizza in oven
+        pizza_was_put_in_oven = 0;
         while (!pizza_was_put_in_oven && running)
         {
             wait_for_sem(sem_set_id, OVEN);
@@ -93,7 +94,11 @@ int main()
                 shm_oven_address->space[shm_oven_address->write_index] = pizza_number;
                 oven_index = shm_oven_address->write_index;
                 shm_oven_address->write_index = (oven_index + 1) % 5;
-                printf("%d %.3f Dodałem pizze: %d, liczba pizz w piecu: %d\n", (int)getpid(), get_timestamp(), pizza_number, shm_oven_address->items);
+                printf("%d %.3f Dodałem pizze: %d, liczba pizz w piecu: %d\n",
+                       (int)getpid(),
+                       get_timestamp(),
+                       pizza_number,
+                       shm_oven_address->items);
                 pizza_was_put_in_oven = 1;
             }
 
@@ -109,11 +114,28 @@ int main()
         oven_index = shm_oven_address->read_index;
         shm_oven_address->read_index = (oven_index + 1) % 5;
         pizza_number = shm_oven_address->space[oven_index];
+        pizzas_in_oven = shm_oven_address->items;
         free_sem(sem_set_id, OVEN);
 
+        // put pizza on table
+        pizza_was_put_on_table = 0;
         while (!pizza_was_put_on_table && running)
         {
             wait_for_sem(sem_set_id, TABLE);
+
+            if (shm_table_address->items < 5)
+            {
+                shm_table_address->items += 1;
+                int index = shm_table_address->write_index;
+                shm_table_address->write_index = (index + 1) % 5;
+                printf("%d %.5f Wyjmuję pizzę: %d. Liczba pizz w piecu: %d. Liczba pizz na stole: %d\n",
+                       (int)getpid(),
+                       get_timestamp(),
+                       pizza_number,
+                       pizzas_in_oven,
+                       shm_table_address->items);
+                pizza_was_put_on_table = 1;
+            }
             free_sem(sem_set_id, TABLE);
         }
     }
@@ -140,11 +162,11 @@ void int_handler(int signum)
     running = 0;
 }
 
-// gettimeofday??
 double get_timestamp()
 {
-    clock_t cycles = times(NULL);
-    return (double)(cycles - start_time) / sysconf(_SC_CLK_TCK);
+    struct timeval tv;
+    gettimeofday(&tv, NULL);
+    return (double)(tv.tv_sec - start_time.tv_sec) + (tv.tv_usec - start_time.tv_usec) * 0.000001;
 }
 
 void wait_for_sem(int sem_set_id, int sem_no)

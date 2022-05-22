@@ -10,6 +10,9 @@
 #include <signal.h>
 #include <time.h>
 #include <sys/times.h>
+#include <sys/time.h>
+
+extern int running;
 
 enum place_sem
 {
