@@ -1,6 +1,6 @@
 all:
 	gcc -c common.c
-	gcc -Wall baker.c -o baker
+	gcc -Wall -o baker baker.c common.o
 	gcc -Wall -o deliverer deliverer.c common.o
 	gcc -Wall -o pizzeria pizzeria.c common.o
 

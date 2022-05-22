@@ -12,8 +12,6 @@
 #include <sys/times.h>
 #include <sys/time.h>
 
-extern int running;
-
 enum place_sem
 {
     OVEN,
@@ -27,3 +25,6 @@ struct container
     int write_index;
     int space[5];
 };
+
+extern void wait_for_sem(int sem_set_id, int sem_no);
+extern void free_sem(int sem_set_id, int sem_no);

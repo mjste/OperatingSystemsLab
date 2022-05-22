@@ -1,11 +1,8 @@
-
 #include "common.h"
 
 void set_interrupt();
 void int_handler(int signum);
 double get_timestamp();
-void wait_for_sem(int sem_set_id, int sem_no);
-void free_sem(int sem_set_id, int sem_no);
 
 int running = 1;
 struct timeval start_time;
@@ -128,7 +125,8 @@ int main()
                 shm_table_address->items += 1;
                 int index = shm_table_address->write_index;
                 shm_table_address->write_index = (index + 1) % 5;
-                printf("%d %.5f Wyjmuję pizzę: %d. Liczba pizz w piecu: %d. Liczba pizz na stole: %d\n",
+                shm_table_address->space[index] = pizza_number;
+                printf("%d %.3f Wyjmuję pizzę: %d. Liczba pizz w piecu: %d. Liczba pizz na stole: %d\n",
                        (int)getpid(),
                        get_timestamp(),
                        pizza_number,
@@ -143,6 +141,11 @@ int main()
     if (shmdt(shm_oven_address) == -1)
     {
         perror("shm_oven_dt");
+        exit(-1);
+    }
+    if (shmdt(shm_table_address) == -1)
+    {
+        perror("shm_table_dt");
         exit(-1);
     }
     return 0;
@@ -167,22 +170,4 @@ double get_timestamp()
     struct timeval tv;
     gettimeofday(&tv, NULL);
     return (double)(tv.tv_sec - start_time.tv_sec) + (tv.tv_usec - start_time.tv_usec) * 0.000001;
-}
-
-void wait_for_sem(int sem_set_id, int sem_no)
-{
-    struct sembuf sem_buf;
-    sem_buf.sem_num = sem_no;
-    sem_buf.sem_op = -1;
-    sem_buf.sem_flg = 0;
-    semop(sem_set_id, &sem_buf, 1); // wait for access
-}
-
-void free_sem(int sem_set_id, int sem_no)
-{
-    struct sembuf sem_buf;
-    sem_buf.sem_num = sem_no;
-    sem_buf.sem_op = 1;
-    sem_buf.sem_flg = 0;
-    semop(sem_set_id, &sem_buf, 1);
 }
