@@ -1,0 +1,3 @@
+W przypadku gdy liczba piekarzy czy dostawców jest mniejsza od pojemności pieca/stołu, nie czekają oni długo na zwolnienie się tego zasobu.
+W przypadku gdy ta liczba jest większa, wiele procesów oczekuje na zwolnienie zasobu przez większą część czasu będąc nieaktywnymi, czekając na dostęp do pamięci.
+Część z nich być może nawet nie dostanie dostępu do zasobu.

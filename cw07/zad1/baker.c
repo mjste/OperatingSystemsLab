@@ -77,7 +77,7 @@ int main()
         // picking pizza number
         pizza_number = rand() % 10;
         printf("%d %.3f Przygotowuję pizze: %d\n", (int)getpid(), get_timestamp(), pizza_number);
-        sleep(1);
+        sleep_range(1, 2);
 
         // put pizza in oven
         pizza_was_put_in_oven = 0;
@@ -101,9 +101,9 @@ int main()
 
             free_sem(sem_set_id, OVEN);
             if (!pizza_was_put_in_oven)
-                sleep(1);
+                sleep_range(0, 1);
         }
-        sleep(4);
+        sleep_range(4, 5);
 
         // put pizza out of oven
         wait_for_sem(sem_set_key, OVEN);

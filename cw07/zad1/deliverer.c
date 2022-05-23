@@ -77,12 +77,12 @@ int main()
         }
 
         // go to client
-        sleep(5);
-        printf("%d, %.3f Dostarczam pizzę: %d.\n",
+        sleep_range(4, 5);
+        printf("%d %.3f Dostarczam pizzę: %d.\n",
                (int)getpid(),
                get_timestamp(),
                pizza_number);
-        sleep(5);
+        sleep_range(4, 5);
     }
 
     if (shmdt(shm_table_address) == -1)

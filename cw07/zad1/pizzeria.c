@@ -103,8 +103,6 @@ int main(int argc, char **argv)
         }
     }
 
-    printf("Started bakers and suppliers\n");
-
     while (running)
     {
         sleep(1);

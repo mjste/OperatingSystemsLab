@@ -28,3 +28,5 @@ struct container
 
 extern void wait_for_sem(int sem_set_id, int sem_no);
 extern void free_sem(int sem_set_id, int sem_no);
+extern void sleep_miliseconds(long milis);
+extern void sleep_range(int from, int to);

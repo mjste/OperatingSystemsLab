@@ -5,4 +5,4 @@ all:
 	gcc -Wall -o pizzeria pizzeria.c common.o
 
 clean:
-	rm baker deliverer pizzeria || true
+	rm baker deliverer pizzeria common.o || true
