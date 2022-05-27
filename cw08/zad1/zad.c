@@ -4,8 +4,10 @@
 #include <ctype.h>
 #include <pthread.h>
 #include <string.h>
+#include <sys/time.h>
 #include <sys/times.h>
 #include <unistd.h>
+#include <time.h>
 
 enum p_variant
 {
@@ -43,6 +45,7 @@ int main(int argc, char **argv)
     */
     int number_of_threads;
     int program_variant;
+    struct timeval tv1, tv2;
 
     if (argc != 5)
     {
@@ -80,7 +83,7 @@ int main(int argc, char **argv)
             fscanf(fin, "%d", (int *)&img1.array[i][j]);
     // close fin
     fclose(fin);
-
+    gettimeofday(&tv1, NULL);
     // create_arguments
     int range_min = 0;
     int range_max;
@@ -105,6 +108,8 @@ int main(int argc, char **argv)
         args[i]->to = range_min + (range_max - range_min) * (i + 1) / number_of_threads;
     }
 
+    //
+
     // create threads
     pthread_t *threadsp = malloc(number_of_threads * sizeof(pthread_t));
     for (int i = 0; i < number_of_threads; i++)
@@ -117,19 +122,30 @@ int main(int argc, char **argv)
     }
 
     // wait for threads
-    double *time_arr = malloc(number_of_threads * sizeof(double));
+    long *time_arr = malloc(number_of_threads * sizeof(long));
     for (int i = 0; i < number_of_threads; i++)
     {
-        double *timep;
+        long *timep;
         pthread_join(threadsp[i], (void **)&timep);
         time_arr[i] = *timep;
+        free(timep);
     }
-    puts("Threads finished");
+    gettimeofday(&tv2, NULL);
 
     for (int i = 0; i < number_of_threads; i++)
     {
-        printf("%f \n", time_arr[i]);
+        printf("%ld us\n", time_arr[i]);
     }
+    printf("Real: %ld us\n", (tv2.tv_sec - tv1.tv_sec) * 1000000 + (tv2.tv_usec - tv1.tv_usec));
+
+    free(time_arr);
+
+    // free arguments
+    for (int i = 0; i < number_of_threads; i++)
+    {
+        free(args[i]);
+    }
+    free(args);
 
     // save image
     fprintf(fout, "%s\n%d %d\n%d\n", img_mode, rows, cols, max_val);
@@ -211,8 +227,8 @@ void process_arguments(char **argv, int *no_of_threads, int *p_var)
 
 void *thread_handler(void *args)
 {
-    time_t start = times(NULL);
-    time_t stop;
+    struct timeval tv1, tv2;
+    gettimeofday(&tv1, NULL);
     struct thread_argument *arg = args;
     switch (arg->variant)
     {
@@ -242,8 +258,8 @@ void *thread_handler(void *args)
         break;
     }
     }
-    stop = times(NULL);
-    double *running_time = malloc(sizeof(double));
-    *running_time = ((double)stop - (double)start) / (double)sysconf(_SC_CLK_TCK);
+    gettimeofday(&tv2, NULL);
+    long *running_time = malloc(sizeof(long));
+    *running_time = (tv2.tv_sec - tv1.tv_sec) * 1000000 + (tv2.tv_usec - tv1.tv_usec);
     return running_time;
 }

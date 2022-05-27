@@ -1,0 +1,92 @@
+Variant: numbers, size: 1
+2716 us
+Real: 2892 us
+
+Variant: numbers, size: 2
+1503 us
+2157 us
+Real: 2257 us
+
+Variant: numbers, size: 4
+1859 us
+2269 us
+2456 us
+1947 us
+Real: 2543 us
+
+Variant: numbers, size: 8
+1727 us
+1841 us
+2011 us
+2148 us
+2713 us
+2480 us
+1153 us
+731 us
+Real: 5048 us
+
+Variant: numbers, size: 16
+1733 us
+1686 us
+1787 us
+1895 us
+1853 us
+2147 us
+2269 us
+1919 us
+1868 us
+1822 us
+2289 us
+2200 us
+2071 us
+1772 us
+1514 us
+1465 us
+Real: 9063 us
+
+Variant: block, size: 1
+1737 us
+Real: 1826 us
+
+Variant: block, size: 2
+1610 us
+1610 us
+Real: 1773 us
+
+Variant: block, size: 4
+877 us
+806 us
+895 us
+805 us
+Real: 976 us
+
+Variant: block, size: 8
+401 us
+399 us
+401 us
+401 us
+406 us
+282 us
+233 us
+402 us
+Real: 1016 us
+
+Variant: block, size: 16
+200 us
+196 us
+200 us
+200 us
+200 us
+243 us
+109 us
+200 us
+110 us
+109 us
+116 us
+199 us
+199 us
+200 us
+202 us
+129 us
+Real: 1125 us
+
