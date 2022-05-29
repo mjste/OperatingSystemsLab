@@ -3,4 +3,4 @@ all:
 	gcc -Wall -o prog prog.c utils.o -pthread
 
 clean:
-	rm prog || true
+	rm prog utils.o || true
