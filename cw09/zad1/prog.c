@@ -14,10 +14,10 @@ void *reindeer_function(void *argp);
 
 sem_t elf_sem;
 pthread_t elf_ids[3];
-int elf_count;
-int reindeer_count;
-int elf_event_var;
-int reindeer_event_var;
+int elf_count = 0;
+int reindeer_count = 0;
+int elf_event_var = 0;
+int reindeer_event_var = 0;
 int event_var = 0;
 int santa_elf_start_var = 0;
 int elf_santa_start_var = 0;
@@ -64,6 +64,7 @@ int main()
         exit(-1);
     }
 
+    // create threads
     if (pthread_create(&santa_thread, NULL, &santa_function, NULL) != 0)
     {
         perror("create Santa");
@@ -76,7 +77,7 @@ int main()
             exit(-1);
         }
     for (int i = 0; i < 9; i++)
-        if (pthread_create(&reindeer_threads[i], NULL, &elf_function, NULL) != 0)
+        if (pthread_create(&reindeer_threads[i], NULL, &reindeer_function, NULL) != 0)
         {
             perror("create reindeer");
             exit(-1);
@@ -84,24 +85,11 @@ int main()
 
     pthread_join(santa_thread, NULL);
     for (int i = 0; i < 10; i++)
-    {
         pthread_join(elf_threads[i], NULL);
-    }
-    for (int i = 0; i < 9; i++)
-    {
-        pthread_join(reindeer_threads[i], NULL);
-    }
 
-    if (pthread_mutex_destroy(&elf_count_mutex) != 0)
-    {
-        perror("destroy elf mutex");
-        exit(-1);
-    }
-    if (pthread_mutex_destroy(&reindeer_count_mutex) != 0)
-    {
-        perror("destroy reindeer mutex");
-        exit(-1);
-    }
+    for (int i = 0; i < 9; i++)
+        pthread_join(reindeer_threads[i], NULL);
+
     sem_destroy(&elf_sem);
     return 0;
 }
@@ -123,6 +111,54 @@ void *santa_function(void *argp)
         if (reindeer_event_var == 1)
         {
             reindeer_event_var = 0;
+            // zero reindeer_count
+            pthread_mutex_lock(&reindeer_count_mutex);
+            reindeer_count = 0;
+            pthread_mutex_unlock(&reindeer_count_mutex);
+
+            // inform reindeers of delivery of gifts
+            pthread_mutex_lock(&santa_reindeer_start_mutex);
+            santa_reindeer_start_var = 1;
+            printf("Mikołaj: dostarczam zabawki\n");
+            pthread_cond_broadcast(&santa_reindeer_start_cond);
+            pthread_mutex_unlock(&santa_reindeer_start_mutex);
+
+            // deliver the gifts
+            sleep_range(2, 4);
+
+            // wait for reindeers response
+            pthread_mutex_lock(&reindeer_santa_start_mutex);
+            if (reindeer_santa_start_var != 9)
+            {
+                pthread_cond_wait(&reindeer_santa_start_cond, &reindeer_santa_start_mutex);
+            }
+            reindeer_santa_start_var = 0;
+            pthread_mutex_unlock(&reindeer_santa_start_mutex);
+
+            // reset flag
+            pthread_mutex_lock(&santa_reindeer_start_mutex);
+            santa_reindeer_start_var = 0;
+            pthread_mutex_unlock(&santa_reindeer_start_mutex);
+
+            // inform reindeers of end of delivery
+            pthread_mutex_lock(&santa_reindeer_end_mutex);
+            santa_reindeer_end_var = 1;
+            pthread_cond_broadcast(&santa_reindeer_end_cond);
+            pthread_mutex_unlock(&santa_reindeer_end_mutex);
+
+            // wait for elves' response
+            pthread_mutex_lock(&reindeer_santa_end_mutex);
+            if (reindeer_santa_end_var != 3)
+            {
+                pthread_cond_wait(&reindeer_santa_end_cond, &reindeer_santa_end_mutex);
+            }
+            reindeer_santa_end_var = 0;
+            pthread_mutex_unlock(&reindeer_santa_end_mutex);
+
+            // reset flag
+            pthread_mutex_lock(&santa_reindeer_end_mutex);
+            santa_reindeer_end_var = 0;
+            pthread_mutex_unlock(&santa_reindeer_end_mutex);
         }
         pthread_mutex_unlock(&reindeer_event_mutex);
 
@@ -182,8 +218,8 @@ void *santa_function(void *argp)
         }
         pthread_mutex_unlock(&elf_event_mutex);
 
-        pthread_mutex_unlock(&event_mutex);
         printf("Mikołaj: zasypiam\n");
+        pthread_mutex_unlock(&event_mutex);
     }
 }
 void *elf_function(void *argp)
@@ -249,6 +285,50 @@ void *reindeer_function(void *argp)
     while (1)
     {
         sleep_range(5, 10);
+        pthread_mutex_lock(&reindeer_count_mutex);
+        reindeer_count += 1;
+        printf("Renifer: czeka %d reniferów na Mikołaja, %lu\n", reindeer_count, pthread_self());
+        if (reindeer_count == 9)
+        {
+            pthread_mutex_lock(&event_mutex);
+            pthread_mutex_lock(&reindeer_event_mutex);
+            reindeer_event_var = 1;
+            event_var = 1;
+            printf("Renifer: Wybudzam Mikołaja, %lu\n", pthread_self());
+            pthread_cond_broadcast(&event_cond);
+            pthread_mutex_unlock(&reindeer_event_mutex);
+            pthread_mutex_unlock(&event_mutex);
+        }
+        pthread_mutex_unlock(&reindeer_count_mutex);
+
+        // wait for santa's response
+        pthread_mutex_lock(&santa_reindeer_start_mutex);
+        if (santa_reindeer_start_var != 1)
+            pthread_cond_wait(&santa_reindeer_start_cond, &santa_reindeer_start_mutex);
+
+        pthread_mutex_unlock(&santa_reindeer_start_mutex);
+
+        // notify santa of receiving start
+        pthread_mutex_lock(&reindeer_santa_start_mutex);
+        reindeer_santa_start_var += 1;
+        if (reindeer_santa_start_var == 9)
+        {
+            pthread_cond_broadcast(&reindeer_santa_start_cond);
+        }
+        pthread_mutex_unlock(&reindeer_santa_start_mutex);
+
+        // wait for problem solved
+        pthread_mutex_lock(&santa_reindeer_end_mutex);
+        if (santa_reindeer_end_var != 1)
+            pthread_cond_wait(&santa_reindeer_end_cond, &santa_reindeer_end_mutex);
+        pthread_mutex_unlock(&santa_reindeer_end_mutex);
+
+        // inform santa that you received message
+        pthread_mutex_lock(&reindeer_santa_end_mutex);
+        reindeer_santa_end_var += 1;
+        if (reindeer_santa_end_var == 9)
+            pthread_cond_broadcast(&reindeer_santa_end_cond);
+        pthread_mutex_unlock(&reindeer_santa_end_mutex);
     }
     return NULL;
 }
