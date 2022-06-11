@@ -10,7 +10,8 @@
 int main()
 {
     int status, gniazdo;
-    struct sockaddr_in ser, cli;
+    struct sockaddr_in ser;
+    // struct sockaddr_in cli;
     char buf[200];
     gniazdo = socket(AF_INET, SOCK_STREAM, 0);
     if (gniazdo == -1)
@@ -31,7 +32,7 @@ int main()
         return 0;
     }
 
-    printf("Podaj tekst:");
+    printf("Podaj tekst: ");
     fgets(buf, sizeof(buf), stdin);
     status = write(gniazdo, buf, strlen(buf));
     status = read(gniazdo, buf, sizeof(buf));

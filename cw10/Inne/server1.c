@@ -7,6 +7,10 @@
 #include <unistd.h>
 #include <string.h>
 
+#define PORT_NUMBER 24001
+
+char reply[] = "HTTP/1.1 200 OK\r\nContent-Length: 136\r\nContent-Type: text/html\r\nConnection: Closed\r\n\r\n<!DOCTYPE html><html><head><meta charset=\"UTF-8\"></head><body><h1>Nudny serwer, jedyne co robi to odpisuje t\xc4\x99 wiadomość</h1></body></html>";
+
 int main()
 {
     int status, gniazdo, dlogosc, nr = 0, end = 1, gniazdo2;
@@ -22,7 +26,7 @@ int main()
 
     memset(&ser, 0, sizeof(ser));
     ser.sin_family = AF_INET;
-    ser.sin_port = htons(24001);
+    ser.sin_port = htons(PORT_NUMBER);
     // ser.sin_addr.s_addr = inet_addr("127.0.0.1"); // htonl(INADDR_ANY)
     ser.sin_addr.s_addr = htonl(INADDR_ANY);
 
@@ -50,20 +54,9 @@ int main()
             return 0;
         }
         read(gniazdo2, buf, sizeof(buf));
-        if (buf[0] == 'Q')
-        {
-            sprintf(buf, "ZGODA, SERWER KONCZY PRACE\n");
-            end = 0;
-        }
-        else if (buf[0] == 'N')
-        {
-            sprintf(buf, "Jestes klienter nr %d", nr++);
-        }
-        else
-        {
-            sprintf(buf, "Nie rozumiem pytania");
-        }
-        write(gniazdo2, buf, strlen(buf));
+        // sprintf(buf, "<!DOCTYPE html><html><head></head><body>nudny serwer</body></html>");
+        // write(gniazdo2, buf, strlen(buf));
+        write(gniazdo2, reply, strlen(reply));
         close(gniazdo2);
     }
 
