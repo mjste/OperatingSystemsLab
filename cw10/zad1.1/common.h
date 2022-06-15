@@ -15,23 +15,24 @@
 #include <time.h>
 #include <sys/time.h>
 
-#define PORT_NUMBER 24000
-#define SOCKET_PATH "/tmp/us_xfr"
 #define NAME_LENGTH 30
-#define BUFFER_SIZE 50
+#define BUFFER_SIZE 40
 #define READ_SIZE (BUFFER_SIZE - 1)
 
-// enum play_sign
-// {
-//     CROSS,
-//     CIRCLE
-// };
-
-enum ttmessage
+enum message_s
 {
-    CONNECT = 10,
-    QUIT,
-    CROSS,
+    CROSS = 10,
     CIRCLE,
     WAIT,
+    PLAY,
+    WRONG_MESSAGE,
+    QUIT,
+    FIRST,
+    SECOND,
+    WIN,
+    DEFEAT,
+    PING,
+    DRAW
 };
+
+void fatal(char *message);

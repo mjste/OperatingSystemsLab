@@ -11,7 +11,9 @@ void argument_error();
 
 int main(int argc, char **argv)
 {
+    int sign;
     char name[NAME_LENGTH];
+    char opponent_name[NAME_LENGTH];
     enum connection_type_enum connection_type;
     char address[PATH_MAX];
     int port_number;
@@ -63,6 +65,35 @@ int main(int argc, char **argv)
     }
     }
 
+    char buffer[BUFFER_SIZE];
+    int read_bytes;
+    memset(buffer, 0, BUFFER_SIZE);
+    buffer[0] = strlen(name);
+    strcpy(buffer + 1, name);
+    write(sfd, buffer, strlen(buffer));
+
+    memset(buffer, 0, BUFFER_SIZE);
+    read(sfd, buffer, 1);
+
+    switch (buffer[0])
+    {
+    case WAIT:
+        read(sfd, buffer, 1);
+        break;
+
+    case CROSS:
+    case CIRCLE:
+    }
+
+    sign = buffer[0];
+    strncpy(opponent_name, buffer + 2, buffer[1]);
+    printf("You will be matching with %s\n", opponent_name);
+
+    while (1)
+    {
+        sleep(1);
+    }
+
     return 0;
 }
 
@@ -97,7 +128,7 @@ void process_arguments(int argc, char **argv, char *name, enum connection_type_e
         if (strcmp(argv[2], "inet") == 0)
         {
             *connection_type = INET;
-            strncpy(name, argv[2], NAME_LENGTH);
+            strncpy(name, argv[1], NAME_LENGTH);
         }
         else
         {
